@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🤔 Descuajeringaooo</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #000;
+        color: white;
+        margin: 20px;
+        overflow-x: hidden;
+      }
+      #title {
+        margin-bottom: 10px;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.2s ease, color 0.2s ease;
+      }
+      #title:hover {
+        transform: scale(1.05);
+        color: #ffd60a;
+      }
+      #info {
+        margin: 15px 0;
+        font-size: 18px;
+        color: #ccc;
+      }
+      #puzzle {
+        width: 312px;
+        margin: 20px auto;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 0;
+        padding: 0;
+      }
+      .tile {
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 44px;
+        line-height: 1;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.12s ease, filter 0.12s ease;
+      }
+      .tile:hover {
+        transform: scale(1.08);
+        filter: brightness(1.15);
+      }
+      .selected {
+        outline: 3px solid #ff3b30;
+        border-radius: 6px;
+      }
+      #message {
+        margin-top: 15px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #fff;
+        min-height: 32px;
+      } /* 💯 celebración */
+      .celebration {
+        position: fixed;
+        top: -80px;
+        font-size: 52px;
+        pointer-events: none;
+        z-index: 9999;
+        animation: fall 4s linear forwards;
+      }
+      @keyframes fall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        80% {
+          transform: translateY(calc(100vh - 120px)) rotate(360deg);
+        }
+        90% {
+          transform: translateY(calc(100vh - 170px)) rotate(420deg);
+        }
+        100% {
+          transform: translateY(calc(100vh - 120px)) rotate(480deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">🤔 Descuajeringaooo</h1>
+    <div id="info">Movimientos: <span id="moves">0</span></div>
+    <div id="puzzle"></div>
+    <div id="message"></div>
+    <script>
+      const solution = [
+        "🟦",
+        "🟦",
+        "🟦",
+        "🟦",
+        "🟦",
+        "🟦",
+        "🟦",
+        "🟨",
+        "🟨",
+        "🟨",
+        "🟨",
+        "🟦",
+        "🟦",
+        "🟨",
+        "🟫",
+        "🟫",
+        "🟨",
+        "🟦",
+        "🟦",
+        "🟨",
+        "🟨",
+        "🟨",
+        "🟨",
+        "🟦",
+        "🟩",
+        "🟩",
+        "🟫",
+        "🟫",
+        "🟩",
+        "🟩",
+        "🟩",
+        "🟩",
+        "🟫",
+        "🟫",
+        "🟩",
+        "🟩",
+      ];
+      let pieces = [...solution];
+      let selected = null;
+      let moves = 0;
+      const puzzle = document.getElementById("puzzle");
+      const title = document.getElementById("title");
+      title.addEventListener("click", shufflePuzzle);
+      title.addEventListener("mouseenter", () => {
+        if (title.textContent === "🤔 Descuajeringaooo") {
+          title.textContent = "🤪 Descuajeringar";
+        }
+      });
+      title.addEventListener("mouseleave", () => {
+        if (title.textContent === "🤪 Descuajeringar") {
+          title.textContent = "🤔 Descuajeringaooo";
+        }
+      });
+      function drawPuzzle() {
+        puzzle.innerHTML = "";
+        pieces.forEach((emoji, index) => {
+          const tile = document.createElement("div");
+          tile.className = "tile";
+          if (selected === index) {
+            tile.classList.add("selected");
+          }
+          tile.textContent = emoji;
+          tile.addEventListener("click", () => selectTile(index));
+          puzzle.appendChild(tile);
+        });
+      }
+      function selectTile(index) {
+        if (selected === null) {
+          selected = index;
+          drawPuzzle();
+          return;
+        }
+        if (selected === index) {
+          selected = null;
+          drawPuzzle();
+          return;
+        }
+        [pieces[selected], pieces[index]] = [pieces[index], pieces[selected]];
+        moves++;
+        document.getElementById("moves").textContent = moves;
+        selected = null;
+        drawPuzzle();
+        checkWin();
+      }
+      function shufflePuzzle() {
+        for (let i = pieces.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pieces[i], pieces[j]] = [pieces[j], pieces[i]];
+        }
+        moves = 0;
+        selected = null;
+        title.textContent = "🤔 Descuajeringaooo";
+        document.getElementById("moves").textContent = "0";
+        document.getElementById("message").textContent = "";
+        drawPuzzle();
+      }
+      function celebrate() {
+        for (let i = 0; i < 30; i++) {
+          const emoji = document.createElement("div");
+          emoji.className = "celebration";
+          emoji.textContent = "💯";
+          emoji.style.left = Math.random() * 95 + "vw";
+          emoji.style.animationDelay = Math.random() * 0.5 + "s";
+          document.body.appendChild(emoji);
+          setTimeout(() => {
+            emoji.remove();
+          }, 4000);
+        }
+      }
+      function checkWin() {
+        let solved = true;
+        for (let i = 0; i < solution.length; i++) {
+          if (pieces[i] !== solution[i]) {
+            solved = false;
+            break;
+          }
+        }
+        if (solved) {
+          title.textContent = "🤪 Descuajeringar de nuevo";
+          document.getElementById("message").textContent = "¡Eso era! 😎";
+          celebrate();
+        }
+      }
+      drawPuzzle();
+      shufflePuzzle();
+    </script>
+  </body>
+</html>
